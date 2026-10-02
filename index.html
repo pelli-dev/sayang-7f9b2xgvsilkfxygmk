@@ -2,32 +2,375 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Test Site</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For My Sayang</title>
+    <link rel="icon" type="image/png" href="imgs/heart.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            text-align: center;
-            padding-top: 100px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #2b1214;
+            color: #fcf8f8;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
         }
-        .card {
-            background: white;
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        .font-serif-custom {
+            font-family: 'Playfair Display', serif;
         }
-        h1 { color: #4f46e5; }
+        @keyframes pulse-glow {
+            0% { transform: translate(-50%, -50%) scale(0.95); box-shadow: 0 0 0 0 rgba(226, 153, 142, 0.7); }
+            70% { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 0 15px rgba(226, 153, 142, 0); }
+            100% { transform: translate(-50%, -50%) scale(0.95); box-shadow: 0 0 0 0 rgba(226, 153, 142, 0); }
+        }
+        .pulse-spot {
+            animation: pulse-glow 2s infinite;
+        }
+        @keyframes ripple-fade {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+        }
+        .tap-ripple {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(245, 222, 219, 0.6);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: ripple-fade 0.6s ease-out forwards;
+            pointer-events: none;
+            z-index: 5;
+        }
+        @keyframes float-up {
+            0% { transform: translateY(0px) scale(0.8); opacity: 1; }
+            100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
+        }
+        .floating-heart {
+            position: absolute;
+            animation: float-up 2s ease-in-out forwards;
+            pointer-events: none;
+            color: #e2998e;
+            font-size: 24px;
+            z-index: 20;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8b3a3a;
+            border-radius: 4px;
+        }
     </style>
 </head>
-<body>
-    <div class="card">
-        <h1>Success! 🎉</h1>
-        <p>If you are reading this, you successfully bypassed the Cloudflare security gate!</p>
-        <p>This page is completely private.</p>
+<body class="min-h-screen flex flex-col justify-between items-center bg-[#2b1214] text-[#fcf8f8] overflow-x-hidden selection:bg-[#8b3a3a] selection:text-white">
+
+    <header class="w-full max-w-md p-4 flex justify-between items-center border-b border-[#5c2326] bg-[#361719]/80 backdrop-blur-md sticky top-0 z-20">
+        <div class="flex items-center space-x-2">
+            <span class="text-xl">🇮🇹❤️🇮🇩</span>
+            <h1 class="font-serif-custom text-lg font-bold tracking-wide text-[#f5dedb]">Our Journey</h1>
+        </div>
+        <div id="level-indicator" class="text-xs uppercase tracking-widest bg-[#5c2326] px-3 py-1.5 rounded-full font-semibold text-[#f5dedb]">
+            Level 1 of 3
+        </div>
+    </header>
+
+    <main class="w-full max-w-md flex-1 flex flex-col items-center justify-center p-4 relative">
+        
+        <!-- Welcome View -->
+        <div id="welcome-view" class="w-full flex flex-col items-center text-center py-6">
+            <div class="w-24 h-24 mb-6 rounded-full bg-[#5c2326] flex items-center justify-center shadow-xl border-2 border-[#e2998e]/40">
+                <span class="text-4xl animate-pulse">✨</span>
+            </div>
+            <h2 class="font-serif-custom text-3xl font-bold mb-3 text-[#fcf8f8]">A Little Journey For Us</h2>
+            <p class="text-sm text-[#d4b2af] mb-8 leading-relaxed max-w-xs">
+                Distance is hard, but our friendship connects us everywhere. I hid 3 special moments in these pictures. Let's see if you can find them!
+            </p>
+            <button onclick="startGame()" class="w-full py-4 bg-[#8b3a3a] hover:bg-[#a34444] active:scale-95 transition-all text-white font-semibold rounded-2xl shadow-lg border border-[#e2998e]/30 flex items-center justify-center space-x-2">
+                <span>Start Our Adventure</span>
+                <span class="text-lg">➔</span>
+            </button>
+        </div>
+
+        <!-- Game Level View (Hidden Initially) -->
+        <div id="game-view" class="w-full flex-col items-center hidden">
+            <div class="w-full mb-3 text-left">
+                <span id="level-category" class="text-xs font-bold uppercase tracking-wider text-[#e2998e]">Scene 1</span>
+                <h3 id="level-title" class="font-serif-custom text-xl font-bold text-[#fcf8f8]">Under the Moon</h3>
+                <p id="level-hint" class="text-xs text-[#d4b2af] mt-0.5">Explore the scene and tap where the secret is hidden...</p>
+            </div>
+
+            <!-- Interactive Scene Frame -->
+            <div id="scene-container" class="w-full aspect-[4/5] bg-[#361719] rounded-3xl overflow-hidden relative shadow-2xl border-2 border-[#5c2326]">
+                
+                <!-- Image rendered via JavaScript -->
+                <div id="image-scene-wrapper" class="w-full h-full relative cursor-pointer bg-[#361719] flex items-center justify-center">
+                    <img id="scene-img" src="" alt="Scene" class="w-full h-full object-cover opacity-0 transition-opacity duration-300">
+                    <!-- Loading spinner while image loads -->
+                    <div id="img-loader" class="absolute text-2xl text-[#8b3a3a]"></div>
+                </div>
+
+                <!-- Invisible Touch Target with Debug Coloring (Remove bg-pink-500/40 and border when done testing) -->
+                <div id="hidden-spot" class="absolute w-[7%] aspect-square min-w-[40px] min-h-[40px] cursor-pointer z-35 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center text-xs font-bold text-white" style="display: none;" onclick="onSpotFound(event)"></div>
+            </div>
+
+            <button onclick="showHint()" class="mt-4 text-xs text-[#d4b2af] underline hover:text-white transition-colors">
+                Need a hint? Tap here ✨
+            </button>
+        </div>
+
+        <!-- Completion / Final Reward View (Hidden Initially) -->
+        <div id="completion-view" class="w-full flex-col items-center text-center py-6 hidden">
+            <div class="w-24 h-24 mb-6 rounded-full bg-[#8b3a3a] flex items-center justify-center shadow-2xl border-2 border-[#e2998e] animate-bounce">
+                <span class="text-4xl">💌</span>
+            </div>
+            <h2 class="font-serif-custom text-3xl font-bold mb-3 text-[#fcf8f8]">You Found Everything!</h2>
+            <div class="bg-[#361719] border border-[#5c2326] p-6 rounded-3xl shadow-xl mb-6 text-left relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 text-7xl opacity-10">🌹</div>
+                <h4 class="font-serif-custom font-bold text-[#e2998e] mb-2 text-base">A Special Note:</h4>
+                <p class="text-sm text-[#fcf8f8] leading-relaxed italic">
+                    "From our gentle touch, to the fish we squeeze, to the cozy teddy bear, every detail reminds me how lucky I am to have you. Thank you, my friend. Ti voglio bene infinitamente! ❤️"
+                </p>
+            </div>
+            <button onclick="restartGame()" class="w-full py-4 bg-[#8b3a3a] hover:bg-[#a34444] active:scale-95 transition-all text-white font-semibold rounded-2xl shadow-lg border border-[#e2998e]/30">
+                Play Again Whenever You Want
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Hint Popup Modal -->
+    <div id="hint-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-[#361719] border-2 border-[#8b3a3a] w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 transition-transform duration-300 relative" id="hint-content-box">
+            <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-[#8b3a3a] rounded-full flex items-center justify-center border-2 border-[#e2998e] shadow-lg">
+                <span class="text-xl">💡</span>
+            </div>
+            <h3 class="font-serif-custom text-xl font-bold text-center mt-3 mb-2 text-[#f5dedb]">A Little Hint ✨</h3>
+            <p id="hint-modal-message" class="text-sm text-[#d4b2af] text-center mb-6 leading-relaxed">
+                Hint goes here...
+            </p>
+            <button onclick="closeHintModal()" class="w-full py-3.5 bg-[#8b3a3a] hover:bg-[#a34444] active:scale-95 transition-all text-white font-semibold rounded-xl shadow-md border border-[#e2998e]/30">
+                Got it, let's look! ➔
+            </button>
+        </div>
     </div>
+
+    <!-- Sweet Message Popup Modal -->
+    <div id="message-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-[#361719] border-2 border-[#8b3a3a] w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 transition-transform duration-300 relative" id="modal-content-box">
+            <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-[#8b3a3a] rounded-full flex items-center justify-center border-2 border-[#e2998e] shadow-lg">
+                <span class="text-xl">💖</span>
+            </div>
+            <h3 id="modal-title" class="font-serif-custom text-xl font-bold text-center mt-3 mb-2 text-[#f5dedb]">Secret Found!</h3>
+            <p id="modal-message" class="text-sm text-[#d4b2af] text-center mb-6 leading-relaxed">
+                
+            </p>
+            <button onclick="closeModalAndNext()" class="w-full py-3.5 bg-[#8b3a3a] hover:bg-[#a34444] active:scale-95 transition-all text-white font-semibold rounded-xl shadow-md border border-[#e2998e]/30">
+                Continue Our Journey ➔
+            </button>
+        </div>
+    </div>
+
+    <footer class="w-full max-w-md p-4 text-center text-xs text-[#b89492]/70 border-t border-[#5c2326]">
+        Made with endless love ✨
+    </footer>
+
+    <script>
+        let currentLevel = 0;
+        
+        const levels = [
+            {
+                category: "Level 1 of 3",
+                title: "Under the Moon",
+                logicHint: "What colors are your nails? What color is love? Press it!!",
+                imageSrc: 'imgs/scene1.jpeg',
+                spotX_PC: 50, 
+                spotY_PC: 67,
+                message: "Distance is just numbers on a map when two hearts fit together this perfectly. Even if we are far apart, I feel you right beside me. You make me grow every day into a better person",
+                spotSizeX: 7,
+                spotSizeY: 7,
+                rotate: 0
+            },
+            {
+                category: "Level 2 of 3",
+                title: "The Deep Blue",
+                logicHint: "What would you like to squeeze in this picture? Press it!!",
+                imageSrc: 'imgs/scene2.jpeg',
+                spotX_PC: 52, 
+                spotY_PC: 79,
+                message: "From the way your eyes sparkle to your smile, your laughter, and the magic in the way you talk, every single detail of who you are is a work of art to me. You are beautiful Sayang. I could spend hours doing anything with you, even the most boring thing in the world, if it means we are together.",
+                spotSizeX: 22,
+                spotSizeY: 13,
+                rotate: 0
+            },
+            {
+                category: "Level 3 of 3",
+                title: "Sweet Dreams",
+                logicHint: "It doesnt have a name, you always use it as a pillow in our calls. Press it!!",
+                imageSrc: 'imgs/scene3.jpeg',
+                spotX_PC: 38, 
+                spotY_PC: 22,
+                message: "There is something so magical about dreams. Even when we are far apart, they have a special way of closing the distance and bringing us together. Whenever I close my eyes, you are my favorite place to get lost.",
+                spotSizeX: 18,
+                spotSizeY: 7,
+                rotate: 35
+            }
+        ];
+
+        const sceneImg = document.getElementById('scene-img');
+        const loader = document.getElementById('img-loader');
+
+        sceneImg.addEventListener('load', () => {
+            loader.style.display = 'none';
+            sceneImg.classList.remove('opacity-0');
+        });
+
+        function startGame() {
+            document.getElementById('welcome-view').classList.add('hidden');
+            document.getElementById('welcome-view').classList.remove('flex');
+            
+            const gameView = document.getElementById('game-view');
+            gameView.classList.remove('hidden');
+            gameView.classList.add('flex');
+            
+            loadLevel(0);
+        }
+
+        function loadLevel(index) {
+            currentLevel = index;
+            const level = levels[index];
+
+            sceneImg.classList.add('opacity-0');
+            loader.style.display = 'block';
+            const spot = document.getElementById('hidden-spot');
+            spot.style.display = 'none';
+
+            document.getElementById('level-indicator').innerText = level.category;
+            document.getElementById('level-category').innerText = level.category;
+            document.getElementById('level-title').innerText = level.title;
+            document.getElementById('level-hint').innerText = "Explore the scene and tap where the secret is hidden...";
+            
+            sceneImg.src = level.imageSrc;
+
+            spot.style.left = level.spotX_PC + '%';
+            spot.style.top = level.spotY_PC + '%';
+            spot.style.width = level.spotSizeX + '%';
+            spot.style.height = level.spotSizeY + '%';
+            spot.style.transform = `translate(-50%, -50%) rotate(${level.rotate}deg)`;
+
+            setTimeout(() => {
+                spot.style.display = 'block';
+            }, 400);
+        }
+
+        document.getElementById('scene-container').addEventListener('click', function(e) {
+            if (e.target.id === 'hidden-spot' || e.target.closest('#hidden-spot')) return;
+            
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const ripple = document.createElement('div');
+            ripple.className = 'tap-ripple';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            this.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        });
+
+        function showHint() {
+            const level = levels[currentLevel];
+            document.getElementById('hint-modal-message').innerText = `"${level.logicHint}"`;
+
+            const modal = document.getElementById('hint-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            const box = document.getElementById('hint-content-box');
+            box.classList.remove('scale-95');
+            box.classList.add('scale-100');
+        }
+
+        function closeHintModal() {
+            const modal = document.getElementById('hint-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            const box = document.getElementById('hint-content-box');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+        }
+
+        function onSpotFound(e) {
+            if (e) e.stopPropagation();
+            
+            const spot = document.getElementById('hidden-spot');
+            spot.style.display = 'none';
+
+            createFloatingHearts();
+
+            const level = levels[currentLevel];
+            document.getElementById('modal-title').innerText = `Secret Moment #${currentLevel + 1} Found! ❤`;
+            document.getElementById('modal-message').innerText = `"${level.message}"`;
+
+            const modal = document.getElementById('message-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            const box = document.getElementById('modal-content-box');
+            box.classList.remove('scale-95');
+            box.classList.add('scale-100');
+        }
+
+        function closeModalAndNext() {
+            const modal = document.getElementById('message-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            const box = document.getElementById('modal-content-box');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+
+            if (currentLevel + 1 < levels.length) {
+                loadLevel(currentLevel + 1);
+            } else {
+                showCompletionScreen();
+            }
+        }
+
+        function showCompletionScreen() {
+            document.getElementById('game-view').classList.add('hidden');
+            document.getElementById('game-view').classList.remove('flex');
+
+            const completionView = document.getElementById('completion-view');
+            completionView.classList.remove('hidden');
+            completionView.classList.add('flex');
+
+            document.getElementById('level-indicator').innerText = "All Found ✨";
+        }
+
+        function restartGame() {
+            document.getElementById('completion-view').classList.add('hidden');
+            document.getElementById('completion-view').classList.remove('flex');
+
+            const gameView = document.getElementById('game-view');
+            gameView.classList.remove('hidden');
+            gameView.classList.add('flex');
+
+            loadLevel(0);
+        }
+
+        function createFloatingHearts() {
+            const container = document.getElementById('scene-container');
+            const spot = document.getElementById('hidden-spot');
+            
+            for (let i = 0; i < 5; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = (parseFloat(spot.style.left) - 10 + Math.random() * 20) + '%';
+                heart.style.top = (parseFloat(spot.style.top) - 10 + Math.random() * 20) + '%';
+                heart.style.animationDelay = (i * 0.1) + 's';
+                container.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 2000);
+            }
+        }
+    </script>
 </body>
 </html>
